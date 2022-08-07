@@ -10,7 +10,7 @@ This will produce a .xml file titled **CRPG Trigger Loader.xml**. Move this to t
 ## How to customize the code for a specific map
 For some maps, you may want additional functionality unique to that map coded in. To do so, you will need to do the following:
 1. Add a new folder under the code subfolder with a unique name that is descriptive of your map. 
-2. In this folder, add a **files.txt** file. This file should contain the filenames of the files in the folder, in the order that you want them compiled.
+2. In this folder, add a **files.txt** file. This file should contain the filenames of the files in the folder, in the order that you want them compiled. (Each file needs to be on a separate line)
 3. Navigate to the code subfolder and run the following command:
 > python xmlify.py -a *<folder_name>*
 
