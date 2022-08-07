@@ -14,7 +14,7 @@
     	<Command>trSetUnitIdleProcessing(%mod%IdleProc%mod%);</Command>
 	</Effect>
 
-<Effect name=" C Trigger Loader">
+<Effect name=" _C Trigger Loader">
 <Command>xsDisableSelf();}}</Command>
 <Command>const float PI = 3.141592;</Command>
 
@@ -54,8 +54,10 @@
 <Command>int ARRAYS = 0;</Command>
 <Command>int mNumArrays = 0;</Command>
 
+<Command>bool debugIsOn = true;</Command>
+
 <Command>void debugLog(string msg = "") {</Command>
-<Command>	if (trCurrentPlayer() == 1) {</Command>
+<Command>	if (debugIsOn) {</Command>
 <Command><![CDATA[		trChatSend(0, "<color=1,0,0>" + msg);]]></Command>
 <Command>	}</Command>
 <Command>}</Command>
@@ -98,6 +100,46 @@
 <Command>	return(index);</Command>
 <Command>}</Command>
 
+<Command>void zSetInt(int arr = 0, int index = 0, int val = 0) {</Command>
+<Command>	aiPlanSetUserVariableInt(ARRAYS, arr, index, val);</Command>
+<Command>}</Command>
+
+<Command>void zSetFloat(int arr = 0, int index = 0, float val = 0) {</Command>
+<Command>	aiPlanSetUserVariableFloat(ARRAYS, arr, index, val);</Command>
+<Command>}</Command>
+
+<Command>void zSetBool(int arr = 0, int index = 0, bool val = false) {</Command>
+<Command>	aiPlanSetUserVariableBool(ARRAYS, arr, index, val);</Command>
+<Command>}</Command>
+
+<Command>void zSetString(int arr = 0, int index = 0, string val = "") {</Command>
+<Command>	aiPlanSetUserVariableString(ARRAYS, arr, index, val);</Command>
+<Command>}</Command>
+
+<Command>void zSetVector(int arr = 0, int index = 0, vector val = vector(0,0,0)) {</Command>
+<Command>	aiPlanSetUserVariableVector(ARRAYS, arr, index, val);</Command>
+<Command>}</Command>
+
+<Command>int zGetInt(int arr = 0, int index = 0) {</Command>
+<Command>	return(aiPlanGetUserVariableInt(ARRAYS, arr, index));</Command>
+<Command>}</Command>
+
+<Command>float zGetFloat(int arr = 0, int index = 0) {</Command>
+<Command>	return(aiPlanGetUserVariableFloat(ARRAYS, arr, index));</Command>
+<Command>}</Command>
+
+<Command>bool zGetBool(int arr = 0, int index = 0) {</Command>
+<Command>	return(aiPlanGetUserVariableBool(ARRAYS, arr, index));</Command>
+<Command>}</Command>
+
+<Command>string zGetString(int arr = 0, int index = 0) {</Command>
+<Command>	return(aiPlanGetUserVariableString(ARRAYS, arr, index));</Command>
+<Command>}</Command>
+
+<Command>vector zGetVector(int arr = 0, int index = 0) {</Command>
+<Command>	return(aiPlanGetUserVariableVector(ARRAYS, arr, index));</Command>
+<Command>}</Command>
+
 <Command>bool free(int type = -1, int index = -1) {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, type * 3 + xDirtyBit - 1, index)) {</Command>
@@ -127,7 +169,7 @@
 <Command>	return(next);</Command>
 <Command>}</Command>
 
-<Command>bool zGetBool(int index = 0) {</Command>
+<Command>bool mGetBool(int index = 0) {</Command>
 <Command>	bool val = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		val = aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xData - 1, index);</Command>
@@ -135,7 +177,7 @@
 <Command>	return(val);</Command>
 <Command>}</Command>
 
-<Command>bool zSetBool(int index = 0, bool val = false) {</Command>
+<Command>bool mSetBool(int index = 0, bool val = false) {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		success = aiPlanSetUserVariableBool(MALLOC, mBool * 3 + xData - 1, index, val);</Command>
@@ -143,18 +185,18 @@
 <Command>	return(success);</Command>
 <Command>}</Command>
 
-<Command>int zNewBool(bool val = false) {</Command>
+<Command>int mNewBool(bool val = false) {</Command>
 <Command>	int index = malloc(mBool);</Command>
-<Command>	zSetBool(index, val);</Command>
+<Command>	mSetBool(index, val);</Command>
 <Command>	return(index);</Command>
 <Command>}</Command>
 
-<Command>bool zFreeBool(int index = 0) {</Command>
+<Command>bool mFreeBool(int index = 0) {</Command>
 <Command>	return(free(mBool, index));</Command>
 <Command>}</Command>
 
 
-<Command>string zGetString(int index = 0) {</Command>
+<Command>string mGetString(int index = 0) {</Command>
 <Command>	string val = "";</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mString * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		val = aiPlanGetUserVariableString(MALLOC, mString * 3 + xData - 1, index);</Command>
@@ -162,7 +204,7 @@
 <Command>	return(val);</Command>
 <Command>}</Command>
 
-<Command>bool zSetString(int index = 0, string val = "") {</Command>
+<Command>bool mSetString(int index = 0, string val = "") {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mString * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		success = aiPlanSetUserVariableString(MALLOC, mString * 3 + xData - 1, index, val);</Command>
@@ -170,17 +212,17 @@
 <Command>	return(success);</Command>
 <Command>}</Command>
 
-<Command>int zNewString(string val = "") {</Command>
+<Command>int mNewString(string val = "") {</Command>
 <Command>	int index = malloc(mString);</Command>
-<Command>	zSetString(index, val);</Command>
+<Command>	mSetString(index, val);</Command>
 <Command>	return(index);</Command>
 <Command>}</Command>
 
-<Command>bool zFreeString(int index = 0) {</Command>
+<Command>bool mFreeString(int index = 0) {</Command>
 <Command>	return(free(mString, index));</Command>
 <Command>}</Command>
 
-<Command>int zGetInt(int index = 0) {</Command>
+<Command>int mGetInt(int index = 0) {</Command>
 <Command>	int val = -1;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mInt * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		val = aiPlanGetUserVariableInt(MALLOC, mInt * 3 + xData - 1, index);</Command>
@@ -188,7 +230,7 @@
 <Command>	return(val);</Command>
 <Command>}</Command>
 
-<Command>bool zSetInt(int index = 0, int val = 0) {</Command>
+<Command>bool mSetInt(int index = 0, int val = 0) {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mInt * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		success = aiPlanSetUserVariableInt(MALLOC, mInt * 3 + xData - 1, index, val);</Command>
@@ -196,17 +238,17 @@
 <Command>	return(success);</Command>
 <Command>}</Command>
 
-<Command>int zNewInt(int val = 0) {</Command>
+<Command>int mNewInt(int val = 0) {</Command>
 <Command>	int index = malloc(mInt);</Command>
-<Command>	zSetInt(index, val);</Command>
+<Command>	mSetInt(index, val);</Command>
 <Command>	return(index);</Command>
 <Command>}</Command>
 
-<Command>bool zFreeInt(int index = 0) {</Command>
+<Command>bool mFreeInt(int index = 0) {</Command>
 <Command>	return(free(mInt, index));</Command>
 <Command>}</Command>
 
-<Command>float zGetFloat(int index = 0) {</Command>
+<Command>float mGetFloat(int index = 0) {</Command>
 <Command>	float val = -1;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mFloat * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		val = aiPlanGetUserVariableFloat(MALLOC, mFloat * 3 + xData - 1, index);</Command>
@@ -214,7 +256,7 @@
 <Command>	return(val);</Command>
 <Command>}</Command>
 
-<Command>bool zSetFloat(int index = 0, float val = 0) {</Command>
+<Command>bool mSetFloat(int index = 0, float val = 0) {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mFloat * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		success = aiPlanSetUserVariableFloat(MALLOC, mFloat * 3 + xData - 1, index, val);</Command>
@@ -222,17 +264,17 @@
 <Command>	return(success);</Command>
 <Command>}</Command>
 
-<Command>int zNewFloat(float val = 0) {</Command>
+<Command>int mNewFloat(float val = 0) {</Command>
 <Command>	int index = malloc(mFloat);</Command>
-<Command>	zSetFloat(index, val);</Command>
+<Command>	mSetFloat(index, val);</Command>
 <Command>	return(index);</Command>
 <Command>}</Command>
 
-<Command>bool zFreeFloat(int index = 0) {</Command>
+<Command>bool mFreeFloat(int index = 0) {</Command>
 <Command>	return(free(mFloat, index));</Command>
 <Command>}</Command>
 
-<Command>vector zGetVector(int index = 0) {</Command>
+<Command>vector mGetVector(int index = 0) {</Command>
 <Command>	vector val = vector(-1,-1,-1);</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mVector * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		val = aiPlanGetUserVariableVector(MALLOC, mVector * 3 + xData - 1, index);</Command>
@@ -240,7 +282,7 @@
 <Command>	return(val);</Command>
 <Command>}</Command>
 
-<Command>bool zSetVector(int index = 0, vector val = vector(0,0,0)) {</Command>
+<Command>bool mSetVector(int index = 0, vector val = vector(0,0,0)) {</Command>
 <Command>	bool success = false;</Command>
 <Command>	if (aiPlanGetUserVariableBool(MALLOC, mVector * 3 + xDirtyBit - 1, index)) {</Command>
 <Command>		success = aiPlanSetUserVariableVector(MALLOC, mVector * 3 + xData - 1, index, val);</Command>
@@ -248,13 +290,13 @@
 <Command>	return(success);</Command>
 <Command>}</Command>
 
-<Command>int zNewVector(vector val = vector(0,0,0)) {</Command>
+<Command>int mNewVector(vector val = vector(0,0,0)) {</Command>
 <Command>	int index = malloc(mVector);</Command>
-<Command>	zSetVector(index, val);</Command>
+<Command>	mSetVector(index, val);</Command>
 <Command>	return(index);</Command>
 <Command>}</Command>
 
-<Command>bool zFreeVector(int index = 0) {</Command>
+<Command>bool mFreeVector(int index = 0) {</Command>
 <Command>	return(free(mVector, index));</Command>
 <Command>}</Command>
 
@@ -844,14 +886,14 @@
 <Command>void trVectorQuestVarSet(string name = "", vector QVv = vector(-1,-1,-1)) {</Command>
 <Command>	if (name == "") return;</Command>
 <Command>	if (trQuestVarGet("vector"+name) == 0) {</Command>
-<Command>		trQuestVarSet("vector"+name, zNewVector(QVv));</Command>
+<Command>		trQuestVarSet("vector"+name, mNewVector(QVv));</Command>
 <Command>	} else {</Command>
-<Command>		zSetVector(1*trQuestVarGet("vector"+name),QVv);</Command>
+<Command>		mSetVector(1*trQuestVarGet("vector"+name),QVv);</Command>
 <Command>	}</Command>
 <Command>}</Command>
 
 <Command>vector trVectorQuestVarGet(string name = "") {</Command>
-<Command>	return(zGetVector(1*trQuestVarGet("vector"+name)));</Command>
+<Command>	return(mGetVector(1*trQuestVarGet("vector"+name)));</Command>
 <Command>}</Command>
 
 <Command>float trVectorQuestVarGetX(string name = "") {</Command>
@@ -874,14 +916,14 @@
 
 <Command>void trStringQuestVarSet(string name = "", string value = "") {</Command>
 <Command>	if (trQuestVarGet("string"+name) > 0) {</Command>
-<Command>		zSetString(1*trQuestVarGet("string"+name), value);</Command>
+<Command>		mSetString(1*trQuestVarGet("string"+name), value);</Command>
 <Command>	} else {</Command>
-<Command>		trQuestVarSet("string"+name, zNewString(value));</Command>
+<Command>		trQuestVarSet("string"+name, mNewString(value));</Command>
 <Command>	}</Command>
 <Command>}</Command>
 
 <Command>string trStringQuestVarGet(string name="") {</Command>
-<Command>	string val = zGetString(1*trQuestVarGet("string"+name));</Command>
+<Command>	string val = mGetString(1*trQuestVarGet("string"+name));</Command>
 <Command>	return(val);</Command>
 <Command>}</Command>
 
@@ -955,7 +997,7 @@
 <Command>	trQuestVarSet("p"+p+"pf"+kbGetProtoUnitID(r)+"f"+f, v);</Command>
 <Command>}</Command>
 
-<Command>void zSetProtoUnitStat(string r = "", int p = 0, int f = 0, float v = 0.0) {</Command>
+<Command>void mSetProtoUnitStat(string r = "", int p = 0, int f = 0, float v = 0.0) {</Command>
 <Command>for(zsps=0; >1){}</Command>
 <Command>	zsps = kbGetProtoUnitID(r);</Command>
 <Command>	trModifyProtounit(r, p, f, 0.0 + v - trQuestVarGet("p"+p+"pf"+zsps+"f"+f));</Command>
@@ -1013,9 +1055,9 @@
 <Command>}</Command>
 
 <Command>bool trVectorInRectangle(string pos = "", string bot = "", string top = "") {</Command>
-<Command>	vector tempPos = zGetVector(1*trQuestVarGet(pos));</Command>
-<Command>	vector tempBot = zGetVector(1*trQuestVarGet(bot));</Command>
-<Command>	vector tempTop = zGetVector(1*trQuestVarGet(top));</Command>
+<Command>	vector tempPos = mGetVector(1*trQuestVarGet(pos));</Command>
+<Command>	vector tempBot = mGetVector(1*trQuestVarGet(bot));</Command>
+<Command>	vector tempTop = mGetVector(1*trQuestVarGet(top));</Command>
 <Command>	return(vectorInRectangle(tempPos,tempBot,tempTop));</Command>
 <Command>}</Command>
 
@@ -1384,14 +1426,6 @@
 <Command>	}</Command>
 <Command>	return(-1);</Command>
 <Command>}</Command>
-<Command>void saveAllData() {</Command>
-<Command>	// TODO: Data save here</Command>
-<Command>}</Command>
-
-
-<Command>void loadAllData() {</Command>
-<Command>	// TODO: Data load here</Command>
-<Command>}</Command>
 
 <Command>// Selects the player unit</Command>
 <Command>void selectPlayer() {</Command>
@@ -1404,12 +1438,145 @@
 <Command>	trArmyDispatch("1,0","Hoplite",1,xsVectorGetX(pos),0,xsVectorGetZ(pos),heading,true);</Command>
 <Command>	// may need additional functionality</Command>
 <Command>}</Command>
+<Command>const int LOCAL_DATA = 14;</Command>
+
+<Command>int dLocalData = 0;</Command>
+<Command>int xLocalDataSize = 0;</Command>
+<Command>int xLocalDataSlot = 0;</Command>
+<Command>int xLocalDataName = 0;</Command>
+
+<Command>int localDataArray = 0; // an array to temporarily store the slot data in memory</Command>
+
+<Command>void saveAllData() {</Command>
+<Command>	// TODO: Data save here</Command>
+<Command>	int currentdata = 0;</Command>
+<Command>	int slot = 0;</Command>
+
+<Command>	// Find the highest birthday number and set our birthday to that +1</Command>
+<Command>	int birthday = 0;</Command>
+<Command><![CDATA[	for(i=11; <= 99) {]]></Command>
+<Command>		currentdata = trGetScenarioUserData(0, "crpg"+i+".scx");</Command>
+<Command>		if (currentdata > birthday) {</Command>
+<Command>			birthday = currentdata;</Command>
+<Command>		}</Command>
+<Command>	}</Command>
+<Command>	birthday = birthday + 1;</Command>
+<Command>	trSetCurrentScenarioUserData(0, birthday);</Command>
+
+<Command>	// save the data</Command>
+<Command><![CDATA[	for(i=1; < 16) {]]></Command>
+<Command>		// make all data 0 in preparation for updates</Command>
+<Command>		zSetInt(localDataArray, i, 0);</Command>
+<Command>	}</Command>
+<Command>	// save data from the various quest vars</Command>
+<Command>	for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
+<Command>		xDatabaseNext(dLocalData, false); // database search is backwards this time</Command>
+<Command>		slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
+<Command>		currentdata = trQuestVarGet(xGetString(dLocalData, xLocalDataName));</Command>
+<Command>		zSetInt(localDataArray, slot, zGetInt(localDataArray, slot) * xGetInt(dLocalData, xLocalDataSize) + currentdata);</Command>
+<Command>	}</Command>
+<Command>	// save all the data into the slots</Command>
+<Command><![CDATA[	for(i=1; < 16) {]]></Command>
+<Command>		trSetCurrentScenarioUserData(i, zGetInt(localDataArray, i));</Command>
+<Command>	}</Command>
+<Command>}</Command>
+
+<Command>// Reads data from the specified map</Command>
+<Command>void loadAllData(int index = 0) {</Command>
+<Command>	// TODO: Data load here</Command>
+<Command>	string mapName = "crpg" + index + ".scx";</Command>
+<Command>	int currentdata = 0;</Command>
+<Command>	int slot = 0;</Command>
+
+<Command>	// load local data</Command>
+<Command>	if (trGetScenarioUserData(0, "crpg0.scx") > trGetScenarioUserData(0)) {</Command>
+<Command>		// if a new game was started, wipe local data</Command>
+<Command>		trSetCurrentScenarioUserData(14, 0);</Command>
+<Command>		trSetCurrentScenarioUserData(15, 0);</Command>
+<Command>	} else {</Command>
+<Command><![CDATA[		for(i=1; < LOCAL_DATA) {]]></Command>
+<Command>			// load all the raw global data into the array</Command>
+<Command>			zSetInt(localDataArray, i, trGetScenarioUserData(i, mapName));</Command>
+<Command>		}</Command>
+<Command><![CDATA[		for(i=LOCAL_DATA; < 16) {]]></Command>
+<Command>			// load all the raw local data into the array</Command>
+<Command>			zSetInt(localDataArray, i, trGetScenarioUserData(i));</Command>
+<Command>		}</Command>
+<Command>		// turn all the local data into quest vars</Command>
+<Command>		for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
+<Command>			xDatabaseNext(dLocalData);</Command>
+<Command>			slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
+<Command>			currentdata = zGetInt(localDataArray, slot);</Command>
+<Command>			trQuestVarSet(xGetString(dLocalData, xLocalDataName), iModulo(xGetInt(dLocalData, xLocalDataSize), currentdata));</Command>
+<Command>			zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));</Command>
+<Command>		}</Command>
+<Command>	}</Command>
+<Command>}</Command>
+
+<Command>void addSavedData(string varName = "", int slot = 14, int size = 1) {</Command>
+<Command>	xAddDatabaseBlock(dLocalData, true);</Command>
+<Command>	xSetString(dLocalData, xLocalDataName, varName);</Command>
+<Command>	xSetInt(dLocalData, xLocalDataSize, size);</Command>
+<Command>	xSetInt(dLocalData, xLocalDataSlot, slot);</Command>
+<Command>}</Command>
+
+<Command>rule ACTIVE_setup_local_data</Command>
+<Command>active</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	dLocalData = xInitDatabase("localDataSegments");</Command>
+<Command>	xLocalDataSize = xInitAddInt(dLocalData, "size");</Command>
+<Command>	xLocalDataSlot = xInitAddInt(dLocalData, "slot");</Command>
+<Command>	xLocalDataName = xInitAddString(dLocalData, "name");</Command>
+
+<Command>	localDataArray = zNewArray(mInt, 16, "localData");</Command>
+
+<Command>	// add data to slots here</Command>
+
+
+<Command>	xsDisableSelf();</Command>
+<Command>}</Command>
+<Command>int dTravelEntrances = 0;</Command>
+
+<Command>int xTravelEntrancePos = 0;</Command>
+<Command>int xTravelEntranceIndex = 0;</Command>
+<Command>int xTravelEntranceName = 0;</Command>
+<Command>int xTravelEntranceRadius = 0;</Command>
+<Command>int xTravelEntranceActive = 0;</Command>
+
+<Command>// sets up a map entrance and adds it to the dTravelEntrances database</Command>
+<Command>void initializeMapEntrance(vector pos = vector(0,0,0), int destIndex = 0, string destName = "", float radius = 0) {</Command>
+<Command>	xAddDatabaseBlock(dTravelEntrances, true);</Command>
+<Command>	xSetVector(dTravelEntrances, xTravelEntrancePos, pos);</Command>
+<Command>	xSetInt(dTravelEntrances, xTravelEntranceIndex, destIndex);</Command>
+<Command>	xSetString(dTravelEntrances, xTravelEntranceName, destName);</Command>
+<Command>	xSetFloat(dTravelEntrances, xTravelEntranceRadius, xsPow(radius, 2)); // we square the radius so distance calcs are easier later</Command>
+<Command>	xSetBool(dTravelEntrances, xTravelEntranceActive, true); // set to true because the player will spawn on top of one of the entrances</Command>
+<Command>	trEventSetHandler(100000 + destIndex, "travelTo");</Command>
+<Command>}</Command>
+
 
 <Command>void travelTo(int dest = 0) {</Command>
 <Command>	xsEnableRule("travel_to_other_map");</Command>
 <Command>	trQuestVarSet("travelTime", trTimeMS() + 1000);</Command>
-<Command>	trQuestVarSet("travelDestination", 0 - dest);</Command>
+<Command>	trQuestVarSet("travelDestination", dest - 100000);</Command>
 <Command>	trUIFadeToColor(0,0,0,1000,0,true);</Command>
+<Command>}</Command>
+
+<Command>// Finds the neighbor that the player came from at the start of the map</Command>
+<Command>int findMostRecentNeighbor() {</Command>
+<Command>	int index = 0;</Command>
+<Command>	int birthday = -1;</Command>
+<Command>	int current = 0;</Command>
+<Command>	for(i=xGetDatabaseCount(dTravelEntrances); >0) {</Command>
+<Command>		xDatabaseNext(dTravelEntrances);</Command>
+<Command>		current = trGetScenarioUserData(0, "crpg" + xGetInt(dTravelEntrances, xTravelEntranceIndex) + ".scx");</Command>
+<Command>		if (current > birthday) {</Command>
+<Command>			birthday = current;</Command>
+<Command>			index = xGetInt(dTravelEntrances, xTravelEntranceIndex); // save the destination index</Command>
+<Command>		}</Command>
+<Command>	}</Command>
+<Command>	return(index);</Command>
 <Command>}</Command>
 
 
@@ -1419,11 +1586,49 @@
 <Command>{</Command>
 <Command>	if (trTimeMS() > trQuestVarGet("travelTime")) {</Command>
 <Command>		saveAllData();</Command>
-<Command>		loadScenario("CommunityRPG\map"+1*trQuestVarGet("travelDestination"));</Command>
+<Command>		loadScenario("CommunityRPG\crpg"+1*trQuestVarGet("travelDestination") + ".scx");</Command>
+<Command>	}</Command>
+<Command>}</Command>
+
+<Command>rule ACTIVE_setup_travel_entrances</Command>
+<Command>active</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	dTravelEntrances = xInitDatabase("travelEntrances");</Command>
+<Command>	xTravelEntrancePos = xInitAddVector(dTravelEntrances, "pos");</Command>
+<Command>	xTravelEntranceIndex = xInitAddInt(dTravelEntrances, "dest");</Command>
+<Command>	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");</Command>
+<Command>	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");</Command>
+<Command>	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");</Command>
+
+<Command>	trDelayedRuleActivation("check_travel_entrances");</Command>
+<Command>	xsDisableSelf();</Command>
+<Command>}</Command>
+
+<Command>rule check_travel_entrances</Command>
+<Command>inactive</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	if (xGetDatabaseCount(dTravelEntrances) > 0) {</Command>
+<Command>		xDatabaseNext(dTravelEntrances);</Command>
+<Command>		// if the player is within the radius of this entrance</Command>
+<Command><![CDATA[		if (unitDistanceToVector(1*trQuestVarGet("player"), xGetVector(dTravelEntrances, xTravelEntrancePos)) < xGetFloat(dTravelEntrances, xTravelEntranceRadius)) {]]></Command>
+<Command>			// if the player just entered, we give them a choice dialog</Command>
+<Command>			if (xGetBool(dTravelEntrances, xTravelEntranceActive) == false) {</Command>
+<Command>				xSetBool(dTravelEntrances, xTravelEntranceActive, true);</Command>
+<Command>				trShowChoiceDialog("Travel to " + xGetString(dTravelEntrances, xTravelEntranceName) + "?",</Command>
+<Command>					"Yes", 100000 + xGetInt(dTravelEntrances, xTravelEntranceIndex),</Command>
+<Command>					"No",-1);</Command>
+<Command>			}</Command>
+<Command>		} else {</Command>
+<Command>			// otherwise, set the entrance to inactive</Command>
+<Command>			xSetBool(dTravelEntrances, xTravelEntranceActive, false);</Command>
+<Command>		}</Command>
+
 <Command>	}</Command>
 <Command>}</Command>
 <Command>rule zenowashereagain</Command>
-<Command>inactive</Command>
+<Command>active</Command>
 <Command>highFrequency</Command>
 <Command>{</Command>
 <Command>if(true) {</Command>

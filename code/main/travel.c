@@ -35,13 +35,13 @@ int findMostRecentNeighbor() {
 	int current = 0;
 	for(i=xGetDatabaseCount(dTravelEntrances); >0) {
 		xDatabaseNext(dTravelEntrances);
-		current = trGetScenarioUserData(0, "CommunityRPG\map" + xGetInt(dTravelEntrances, xTravelEntranceIndex) + ".scx");
+		current = trGetScenarioUserData(0, "crpg" + xGetInt(dTravelEntrances, xTravelEntranceIndex) + ".scx");
 		if (current > birthday) {
 			birthday = current;
-			index = xGetPointer(dTravelEntrances);
+			index = xGetInt(dTravelEntrances, xTravelEntranceIndex); // save the destination index
 		}
 	}
-	return(xGetInt(dTravelEntrances, xTravelEntranceIndex, index));
+	return(index);
 }
 
 
@@ -51,7 +51,7 @@ highFrequency
 {
 	if (trTimeMS() > trQuestVarGet("travelTime")) {
 		saveAllData();
-		loadScenario("CommunityRPG\map"+1*trQuestVarGet("travelDestination") + ".scx");
+		loadScenario("CommunityRPG\crpg"+1*trQuestVarGet("travelDestination") + ".scx");
 	}
 }
 

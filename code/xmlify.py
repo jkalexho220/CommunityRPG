@@ -1006,7 +1006,7 @@ try:
 				print("ERROR: Missing close brackets detected!\n")
 		
 		file_data_2.write('<Command>rule zenowashereagain</Command>\n')
-		file_data_2.write('<Command>inactive</Command>\n')
+		file_data_2.write('<Command>active</Command>\n')
 		file_data_2.write('<Command>highFrequency</Command>\n')
 		file_data_2.write('<Command>{</Command>\n')
 		file_data_2.write('<Command>if(true) {</Command>\n')
