@@ -19,7 +19,8 @@
 		<Param name="DstIndex" dispName="Map Index" varType="long">11</Param>
 		<Param name="DstName" dispName="Map Name" varType="string"></Param>
 		<Param name="Radius" dispName="Radius" varType="float">5.0</Param>
-		<Command>initializeMapEntrance(vector(%DstPoint%), %DstIndex%, "%DstName%", %Radius%);</Command>
+		<Param name="Heading" dispName="Heading" varType="long">0</Param>
+		<Command>initializeMapEntrance(vector(%DstPoint%), %DstIndex%, "%DstName%", %Radius%, %Heading%);</Command>
 	</Effect>
 
 	<Effect name=" _C2 Add Local Var">
@@ -34,12 +35,18 @@
 		<Command>displayMapName("%name%");</Command>
 	</Effect>
 
-	<Effect name=" _C2 Debug OFF">
+	<Effect name=" _C1 Debug OFF">
 		<Command>debugIsOn = false;</Command>
 	</Effect>
 
 	<Effect name=" _C3 Load Data">
 		<Command>loadAllData(findMostRecentNeighbor());</Command>
+	</Effect>
+
+	<Effect name=" _C4 Choose Player Object">
+		<Param name="SrcObj" dispName="Player" varType="unit">0</Param>
+		<Command>trQuestVarSet("player", %SrcObj%);</Command>
+		<Command>enterMap();</Command>
 	</Effect>
 
 </Effects>

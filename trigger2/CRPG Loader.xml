@@ -1433,8 +1433,9 @@
 <Command>}</Command>
 
 <Command>void spawnPlayer(vector pos = vector(0,0,0), int heading = 0) {</Command>
-<Command>	trQuestVarSet("player", trGetNextUnitScenarioNameNumber());</Command>
-<Command>	trArmyDispatch("1,0","Hoplite",1,xsVectorGetX(pos),0,xsVectorGetZ(pos),heading,true);</Command>
+<Command>	selectPlayer();</Command>
+<Command>	trUnitTeleport(xsVectorGetX(pos),0,xsVectorGetZ(pos));</Command>
+<Command>	trUnitSetHeading(heading);</Command>
 <Command>	// may need additional functionality</Command>
 <Command>}</Command>
 
@@ -1451,33 +1452,54 @@
 
 <Command>int localDataArray = 0; // an array to temporarily store the slot data in memory</Command>
 
-<Command>void saveAllData() {</Command>
-<Command>	// TODO: Data save here</Command>
-<Command>	int currentdata = 0;</Command>
-<Command>	int slot = 0;</Command>
-
-<Command>	// Find the highest birthday number and set our birthday to that +1</Command>
+<Command>void updateBirthday() {</Command>
 <Command>	int birthday = 0;</Command>
+<Command>	int currentdata = 0;</Command>
+<Command>	// check the birthday of every map</Command>
 <Command><![CDATA[	for(i=11; <= 99) {]]></Command>
 <Command>		currentdata = trGetScenarioUserData(0, "CommunityRPG\crpg"+i+".scx");</Command>
 <Command>		if (currentdata > birthday) {</Command>
 <Command>			birthday = currentdata;</Command>
 <Command>		}</Command>
 <Command>	}</Command>
-<Command>	birthday = birthday + 1;</Command>
-<Command>	trSetCurrentScenarioUserData(0, birthday);</Command>
+<Command>	// also check the birthday of map 0</Command>
+<Command>	currentdata = trGetScenarioUserData(0, "CommunityRPG\crpg0.scx");</Command>
+<Command>	if (currentdata > birthday) {</Command>
+<Command>		birthday = currentdata;</Command>
+<Command>	}</Command>
+<Command>	// look at me. I'm the birthday now</Command>
+<Command>	trSetCurrentScenarioUserData(0, birthday + 1);</Command>
+<Command>}</Command>
+
+<Command>void saveAllData() {</Command>
+<Command>	xsSetContextPlayer(0);</Command>
+<Command>	int currentdata = 0;</Command>
+<Command>	int slot = 0;</Command>
+
+<Command>	// Find the highest birthday number and set our birthday to that +1</Command>
+<Command>	updateBirthday();</Command>
 
 <Command>	// save the data</Command>
 <Command><![CDATA[	for(i=1; < 16) {]]></Command>
 <Command>		// make all data 0 in preparation for updates</Command>
 <Command>		zSetInt(localDataArray, i, 0);</Command>
 <Command>	}</Command>
-<Command>	// save data from the various quest vars</Command>
+<Command>	// read data from the various quest vars in backwards order</Command>
+<Command>	xSetPointer(dLocalData, 1);</Command>
 <Command>	for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
-<Command>		xDatabaseNext(dLocalData, false); // database search is backwards this time</Command>
+<Command>		debugLog(xGetString(dLocalData, xLocalDataName));</Command>
+<Command>		// read the data in the quest var</Command>
 <Command>		slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
 <Command>		currentdata = trQuestVarGet(xGetString(dLocalData, xLocalDataName));</Command>
+
+<Command>		// floor and ceiling the data so it fits in the data range</Command>
+<Command>		currentdata = xsMax(0, currentdata);</Command>
+<Command>		currentdata = xsMin(currentdata, xGetInt(dLocalData, xLocalDataSize) - 1);</Command>
+
+<Command>		// shift the slot data over and insert our data</Command>
 <Command>		zSetInt(localDataArray, slot, zGetInt(localDataArray, slot) * xGetInt(dLocalData, xLocalDataSize) + currentdata);</Command>
+
+<Command>		xDatabaseNext(dLocalData, true); // database search is backwards this time</Command>
 <Command>	}</Command>
 <Command>	// save all the data into the slots</Command>
 <Command><![CDATA[	for(i=1; < 16) {]]></Command>
@@ -1487,8 +1509,8 @@
 
 <Command>// Reads data from the specified map</Command>
 <Command>void loadAllData(int index = 0) {</Command>
-<Command>	// TODO: Data load here</Command>
-<Command>	string mapName = "crpg" + index + ".scx";</Command>
+<Command>	xsSetContextPlayer(0);</Command>
+<Command>	string mapName = "CommunityRPG\crpg" + index + ".scx"; // this is the map that we will pull data from</Command>
 <Command>	int currentdata = 0;</Command>
 <Command>	int slot = 0;</Command>
 
@@ -1502,6 +1524,7 @@
 <Command>		// if a new game was started, wipe local data</Command>
 <Command><![CDATA[		for(i=LOCAL_DATA; < 16) {]]></Command>
 <Command>			trSetCurrentScenarioUserData(i, 0);</Command>
+<Command>			zSetInt(localDataArray, i, 0);</Command>
 <Command>		}</Command>
 <Command>	} else {</Command>
 <Command><![CDATA[		for(i=LOCAL_DATA; < 16) {]]></Command>
@@ -1510,12 +1533,19 @@
 <Command>		}</Command>
 <Command>	}</Command>
 
-<Command>	// turn all the data into quest vars</Command>
+<Command>	xSetPointer(dLocalData, 1);</Command>
+<Command>	// turn all the data into quest vars by traversing forwards</Command>
 <Command>	for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
 <Command>		xDatabaseNext(dLocalData);</Command>
+<Command>		debugLog(xGetString(dLocalData, xLocalDataName));</Command>
+<Command>		// get the data from the slot</Command>
 <Command>		slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
 <Command>		currentdata = zGetInt(localDataArray, slot);</Command>
+
+<Command>		// read the data segment</Command>
 <Command>		trQuestVarSet(xGetString(dLocalData, xLocalDataName), iModulo(xGetInt(dLocalData, xLocalDataSize), currentdata));</Command>
+
+<Command>		// remove the data segment and continue</Command>
 <Command>		zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));</Command>
 <Command>	}</Command>
 <Command>}</Command>
@@ -1538,10 +1568,14 @@
 
 <Command>	localDataArray = zNewArray(mInt, 16, "localData");</Command>
 
-<Command>	debugLog("Context player is " + xsGetContextPlayer());</Command>
-<Command>	debugLog("Data at 1 is " + zGetInt(localDataArray, 1));</Command>
 
-<Command>	// add data to slots here</Command>
+
+
+<Command>	addSavedData("exampleHealth", 3, 1000);</Command>
+<Command>	addSavedData("exampleAttack", 3, 100);</Command>
+<Command>	addSavedData("exampleQuest", 3, 4);</Command>
+
+
 
 
 <Command>	xsDisableSelf();</Command>
@@ -1553,15 +1587,17 @@
 <Command>int xTravelEntranceName = 0;</Command>
 <Command>int xTravelEntranceRadius = 0;</Command>
 <Command>int xTravelEntranceActive = 0;</Command>
+<Command>int xTravelEntranceHeading = 0;</Command>
 
 <Command>// sets up a map entrance and adds it to the dTravelEntrances database</Command>
-<Command>void initializeMapEntrance(vector pos = vector(0,0,0), int destIndex = 0, string destName = "", float radius = 0) {</Command>
+<Command>void initializeMapEntrance(vector pos = vector(0,0,0), int destIndex = 0, string destName = "", float radius = 0, int heading = 0) {</Command>
 <Command>	xAddDatabaseBlock(dTravelEntrances, true);</Command>
 <Command>	xSetVector(dTravelEntrances, xTravelEntrancePos, pos);</Command>
 <Command>	xSetInt(dTravelEntrances, xTravelEntranceIndex, destIndex);</Command>
 <Command>	xSetString(dTravelEntrances, xTravelEntranceName, destName);</Command>
 <Command>	xSetFloat(dTravelEntrances, xTravelEntranceRadius, xsPow(radius, 2)); // we square the radius so distance calcs are easier later</Command>
 <Command>	xSetBool(dTravelEntrances, xTravelEntranceActive, true); // set to true because the player will spawn on top of one of the entrances</Command>
+<Command>	xSetInt(dTravelEntrances, xTravelEntranceHeading, heading);</Command>
 <Command>	trEventSetHandler(100000 + destIndex, "travelTo");</Command>
 <Command>}</Command>
 
@@ -1587,7 +1623,28 @@
 <Command>			index = xGetInt(dTravelEntrances, xTravelEntranceIndex); // save the destination index</Command>
 <Command>		}</Command>
 <Command>	}</Command>
+<Command>	trQuestVarSet("enteredFrom", index);</Command>
+<Command>	debugLog("Came from " + index);</Command>
+<Command>	debugLog("Birthday is " + birthday);</Command>
+<Command>	trSetCurrentScenarioUserData(0, birthday);</Command>
 <Command>	return(index);</Command>
+<Command>}</Command>
+
+<Command>void enterMap() {</Command>
+<Command>	if (xGetDatabaseCount(dTravelEntrances) > 0) {</Command>
+<Command>		// spawn the player at the entrance that they came from</Command>
+<Command>		for(i=xGetDatabaseCount(dTravelEntrances); >0) {</Command>
+<Command>			xDatabaseNext(dTravelEntrances);</Command>
+<Command>			if (xGetInt(dTravelEntrances, xTravelEntranceIndex) == trQuestVarGet("enteredFrom")) {</Command>
+<Command>				spawnPlayer(xGetVector(dTravelEntrances, xTravelEntrancePos), xGetInt(dTravelEntrances, xTravelEntranceHeading));</Command>
+<Command>				break;</Command>
+<Command>			}</Command>
+<Command>		}</Command>
+<Command>		// TODO: Damage the player based on their current health</Command>
+
+<Command>		// Start checking the entrances</Command>
+<Command>		trDelayedRuleActivation("check_travel_entrances");</Command>
+<Command>	}</Command>
 <Command>}</Command>
 
 
@@ -1610,31 +1667,34 @@
 <Command>	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");</Command>
 <Command>	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");</Command>
 <Command>	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");</Command>
+<Command>	xTravelEntranceHeading = xInitAddInt(dTravelEntrances, "heading");</Command>
 
-<Command>	trDelayedRuleActivation("check_travel_entrances");</Command>
 <Command>	xsDisableSelf();</Command>
 <Command>}</Command>
+
 
 <Command>rule check_travel_entrances</Command>
 <Command>inactive</Command>
 <Command>highFrequency</Command>
 <Command>{</Command>
-<Command>	if (xGetDatabaseCount(dTravelEntrances) > 0) {</Command>
-<Command>		xDatabaseNext(dTravelEntrances);</Command>
-<Command>		// if the player is within the radius of this entrance</Command>
-<Command><![CDATA[		if (unitDistanceToVector(1*trQuestVarGet("player"), xGetVector(dTravelEntrances, xTravelEntrancePos)) < xGetFloat(dTravelEntrances, xTravelEntranceRadius)) {]]></Command>
-<Command>			// if the player just entered, we give them a choice dialog</Command>
-<Command>			if (xGetBool(dTravelEntrances, xTravelEntranceActive) == false) {</Command>
-<Command>				xSetBool(dTravelEntrances, xTravelEntranceActive, true);</Command>
-<Command>				trShowChoiceDialog("Travel to " + xGetString(dTravelEntrances, xTravelEntranceName) + "?",</Command>
-<Command>					"Yes", 100000 + xGetInt(dTravelEntrances, xTravelEntranceIndex),</Command>
-<Command>					"No",-1);</Command>
+<Command>	if (trTime() > cActivationTime) {</Command>
+<Command>		if (xGetDatabaseCount(dTravelEntrances) > 0) {</Command>
+<Command>			xDatabaseNext(dTravelEntrances);</Command>
+<Command>			// if the player is within the radius of this entrance</Command>
+<Command><![CDATA[			if (unitDistanceToVector(1*trQuestVarGet("player"), xGetVector(dTravelEntrances, xTravelEntrancePos)) < xGetFloat(dTravelEntrances, xTravelEntranceRadius)) {]]></Command>
+<Command>				// if the player just entered, we give them a choice dialog</Command>
+<Command>				if (xGetBool(dTravelEntrances, xTravelEntranceActive) == false) {</Command>
+<Command>					xSetBool(dTravelEntrances, xTravelEntranceActive, true);</Command>
+<Command>					trShowChoiceDialog("Travel to " + xGetString(dTravelEntrances, xTravelEntranceName) + "?",</Command>
+<Command>						"Yes", 100000 + xGetInt(dTravelEntrances, xTravelEntranceIndex),</Command>
+<Command>						"No",-1);</Command>
+<Command>				}</Command>
+<Command>			} else {</Command>
+<Command>				// otherwise, set the entrance to inactive</Command>
+<Command>				xSetBool(dTravelEntrances, xTravelEntranceActive, false);</Command>
 <Command>			}</Command>
-<Command>		} else {</Command>
-<Command>			// otherwise, set the entrance to inactive</Command>
-<Command>			xSetBool(dTravelEntrances, xTravelEntranceActive, false);</Command>
-<Command>		}</Command>
 
+<Command>		}</Command>
 <Command>	}</Command>
 <Command>}</Command>
 <Command>rule zenowashereagain</Command>
