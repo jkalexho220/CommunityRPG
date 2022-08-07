@@ -12,7 +12,7 @@ import sys
 ####### CUSTOMIZE THESE #######
 ###############################
 FILENAME = '../trigger2/CRPG Loader.xml'
-NAME = ' _C Trigger Loader'
+NAME = ' _C0 Trigger Loader'
 # include a newline when setting up your personal files
 files = ['main/zshared.c', 'main/helperFunctions.c', 'main/dataload.c',  'main/travel.c']
 
@@ -22,7 +22,19 @@ files = ['main/zshared.c', 'main/helperFunctions.c', 'main/dataload.c',  'main/t
 
 REFORMAT = False
 VERBOSE = False
+ADDITIONAL_FILES = False
 for t in sys.argv:
+	if ADDITIONAL_FILES:
+		ADDITIONAL_FILES = False
+		NAME = NAME + ' ' + t
+		FILENAME = FILENAME[:-4] + ' ' + t + '.xml'
+		with open(t + '/files.txt', 'r') as fd:
+			line = fd.readline()
+			while line:
+				files.append(t + '/' + line)
+				line = fd.readline()
+	if t == '-a':
+		ADDITIONAL_FILES = True
 	if t == '-v':
 		VERBOSE = True
 	if t == '-r':

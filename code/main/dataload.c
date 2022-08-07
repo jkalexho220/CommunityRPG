@@ -1,3 +1,4 @@
+const int GLOBAL_DATA = 4;
 const int LOCAL_DATA = 14;
 
 int dLocalData = 0;
@@ -15,7 +16,7 @@ void saveAllData() {
 	// Find the highest birthday number and set our birthday to that +1
 	int birthday = 0;
 	for(i=11; <= 99) {
-		currentdata = trGetScenarioUserData(0, "crpg"+i+".scx");
+		currentdata = trGetScenarioUserData(0, "CommunityRPG\crpg"+i+".scx");
 		if (currentdata > birthday) {
 			birthday = currentdata;
 		}
@@ -28,7 +29,7 @@ void saveAllData() {
 		// make all data 0 in preparation for updates
 		zSetInt(localDataArray, i, 0);
 	}
-	// save data from the various quest vars
+	// read data from the various quest vars in backwards order
 	for(i=xGetDatabaseCount(dLocalData); >0) {
 		xDatabaseNext(dLocalData, false); // database search is backwards this time
 		slot = xGetInt(dLocalData, xLocalDataSlot);
@@ -48,28 +49,31 @@ void loadAllData(int index = 0) {
 	int currentdata = 0;
 	int slot = 0;
 
+	// load global data
+	for(i=1; < LOCAL_DATA) {
+		// load all the raw global data into the array
+		zSetInt(localDataArray, i, trGetScenarioUserData(i, mapName));
+	}
 	// load local data
-	if (trGetScenarioUserData(0, "crpg0.scx") > trGetScenarioUserData(0)) {
+	if (trGetScenarioUserData(0, "CommunityRPG\crpg0.scx") > trGetScenarioUserData(0)) {
 		// if a new game was started, wipe local data
-		trSetCurrentScenarioUserData(14, 0);
-		trSetCurrentScenarioUserData(15, 0);
-	} else {
-		for(i=1; < LOCAL_DATA) {
-			// load all the raw global data into the array
-			zSetInt(localDataArray, i, trGetScenarioUserData(i, mapName));
+		for(i=LOCAL_DATA; < 16) {
+			trSetCurrentScenarioUserData(i, 0);
 		}
+	} else {
 		for(i=LOCAL_DATA; < 16) {
 			// load all the raw local data into the array
 			zSetInt(localDataArray, i, trGetScenarioUserData(i));
 		}
-		// turn all the local data into quest vars
-		for(i=xGetDatabaseCount(dLocalData); >0) {
-			xDatabaseNext(dLocalData);
-			slot = xGetInt(dLocalData, xLocalDataSlot);
-			currentdata = zGetInt(localDataArray, slot);
-			trQuestVarSet(xGetString(dLocalData, xLocalDataName), iModulo(xGetInt(dLocalData, xLocalDataSize), currentdata));
-			zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));
-		}
+	}
+
+	// turn all the data into quest vars by traversing forwards
+	for(i=xGetDatabaseCount(dLocalData); >0) {
+		xDatabaseNext(dLocalData);
+		slot = xGetInt(dLocalData, xLocalDataSlot);
+		currentdata = zGetInt(localDataArray, slot);
+		trQuestVarSet(xGetString(dLocalData, xLocalDataName), iModulo(xGetInt(dLocalData, xLocalDataSize), currentdata));
+		zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));
 	}
 }
 
@@ -93,9 +97,8 @@ highFrequency
 
 	// add data to slots here
 	/*
+	name | slot | maximum value
 	addSavedData("cow", 1, 10);
-
-
 	*/
 	xsDisableSelf();
 }

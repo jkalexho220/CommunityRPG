@@ -26,6 +26,7 @@ void travelTo(int dest = 0) {
 	trQuestVarSet("travelTime", trTimeMS() + 1000);
 	trQuestVarSet("travelDestination", dest - 100000);
 	trUIFadeToColor(0,0,0,1000,0,true);
+	saveAllData();
 }
 
 // Finds the neighbor that the player came from at the start of the map
@@ -35,7 +36,7 @@ int findMostRecentNeighbor() {
 	int current = 0;
 	for(i=xGetDatabaseCount(dTravelEntrances); >0) {
 		xDatabaseNext(dTravelEntrances);
-		current = trGetScenarioUserData(0, "crpg" + xGetInt(dTravelEntrances, xTravelEntranceIndex) + ".scx");
+		current = trGetScenarioUserData(0, "CommunityRPG\crpg" + xGetInt(dTravelEntrances, xTravelEntranceIndex) + ".scx");
 		if (current > birthday) {
 			birthday = current;
 			index = xGetInt(dTravelEntrances, xTravelEntranceIndex); // save the destination index
@@ -50,8 +51,7 @@ inactive
 highFrequency
 {
 	if (trTimeMS() > trQuestVarGet("travelTime")) {
-		saveAllData();
-		loadScenario("CommunityRPG\crpg"+1*trQuestVarGet("travelDestination") + ".scx");
+		trGameLoadScenario("CommunityRPG\crpg" + 1*trQuestVarGet("travelDestination") + ".scx");
 	}
 }
 

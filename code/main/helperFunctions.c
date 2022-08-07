@@ -13,3 +13,7 @@ void spawnPlayer(vector pos = vector(0,0,0), int heading = 0) {
 	trArmyDispatch("1,0","Hoplite",1,xsVectorGetX(pos),0,xsVectorGetZ(pos),heading,true);
 	// may need additional functionality
 }
+
+void displayMapName(string name = "") {
+	trOverlayText(name, 5.0, -1, -1, -1);
+}

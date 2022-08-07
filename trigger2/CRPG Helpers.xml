@@ -11,30 +11,36 @@
 <Effects>
 	<Effect name="$$22355$$SetIdleProcessing">
     	<Param name="IdleProc" dispName="$$22356$$Process Idle:" varType="bool">true</Param>
-    	<Command>trSetUnitIdleProcessing(%mod%IdleProc%mod%);</Command>
+    	<Command>trSetUnitIdleProcessing(%IdleProc%);</Command>
 	</Effect>
 
-	<Effect name=" _C Setup Map Entrance">
+	<Effect name=" _C1 Setup Map Entrance">
 		<Param name="DstPoint" dispName="Location" varType="area">0</Param>
 		<Param name="DstIndex" dispName="Map Index" varType="long">11</Param>
 		<Param name="DstName" dispName="Map Name" varType="string"></Param>
 		<Param name="Radius" dispName="Radius" varType="float">5.0</Param>
-		<Command>initializeMapEntrance(vector(%DstPoint%), %DstIndex%, %DstName%, %Radius%);
+		<Command>initializeMapEntrance(vector(%DstPoint%), %DstIndex%, "%DstName%", %Radius%);</Command>
 	</Effect>
 
-	<Effect name=" _C Debug OFF">
-		<Command>debugIsOn = false;</Command>
-	</Effect>
-
-	<Effect name=" _C Add Local Var">
+	<Effect name=" _C2 Add Local Var">
 		<Param name="name" dispName="Name" varType="string"></Param>
 		<Param name="slot" dispName="Slot (14 or 15)" varType="long"></Param>
 		<Param name="size" dispName="Size" varType="long"></Param>
-		<Command>addSavedData(%name%, %slot%, %size%);</Command>
+		<Command>addSavedData("%name%", %slot%, %size%);</Command>
 	</Effect>
 
-	<Effect name=" _C Load Data">
+	<Effect name=" _C2 Map Name">
+		<Param name="name" dispName="Name" varType="string"></Param>
+		<Command>displayMapName("%name%");</Command>
+	</Effect>
+
+	<Effect name=" _C2 Debug OFF">
+		<Command>debugIsOn = false;</Command>
+	</Effect>
+
+	<Effect name=" _C3 Load Data">
 		<Command>loadAllData(findMostRecentNeighbor());</Command>
 	</Effect>
 
 </Effects>
+</trigger>

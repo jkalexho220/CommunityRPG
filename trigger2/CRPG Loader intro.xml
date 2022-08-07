@@ -14,7 +14,7 @@
     	<Command>trSetUnitIdleProcessing(%IdleProc%);</Command>
 	</Effect>
 
-<Effect name=" _C0 Trigger Loader">
+<Effect name=" _C0 Trigger Loader intro">
 <Command>xsDisableSelf();}}</Command>
 <Command>const float PI = 3.141592;</Command>
 
@@ -1636,6 +1636,26 @@
 <Command>		}</Command>
 
 <Command>	}</Command>
+<Command>}</Command>
+<Command>rule intro_00</Command>
+<Command>active</Command>
+<Command>highFrequency</Command>
+<Command>runImmediately</Command>
+<Command>{</Command>
+<Command>	trUIFadeToColor(0,0,0,0,0,true);</Command>
+
+<Command>	trDelayedRuleActivation("intro_01");</Command>
+<Command>	xsDisableSelf();</Command>
+<Command>}</Command>
+
+<Command>rule intro_01</Command>
+<Command>inactive</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	saveAllData();</Command>
+<Command>	trQuestVarSet("travelDestination", 11);</Command>
+<Command>	xsEnableRule("travel_to_other_map");</Command>
+<Command>	xsDisableSelf();</Command>
 <Command>}</Command>
 <Command>rule zenowashereagain</Command>
 <Command>active</Command>

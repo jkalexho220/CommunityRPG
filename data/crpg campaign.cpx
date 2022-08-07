@@ -1,0 +1,20 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<campaign name = "AoMH Community RPG" version = "1">
+	<BackgroundSet name = "starscape">
+		<Image pos = "1">CommunityRPG\campaignbg1</Image>
+		<Image pos = "2">CommunityRPG\campaignbg2</Image>
+		<Image pos = "3">CommunityRPG\campaignbg3</Image>
+		<Image pos = "4">CommunityRPG\campaignbg4</Image>
+		<Image pos = "5">CommunityRPG\campaignbg5</Image>
+		<Image pos = "6">CommunityRPG\campaignbg6</Image>
+		<Image pos = "7">CommunityRPG\campaignbg7</Image>
+		<Image pos = "8">CommunityRPG\campaignbg8</Image>
+		<Image pos = "9">CommunityRPG\campaignbg9</Image>
+		<Image pos = "10">CommunityRPG\campaignbg10</Image>
+		<Image pos = "11">CommunityRPG\campaignbg11</Image>
+		<Image pos = "12">CommunityRPG\campaignbg12</Image>
+	</BackgroundSet>
+	<Scenario dispName = "AoMH Community RPG" filename = "CommunityRPG\crpg0.scx" BackgroundSet = "starscape">A collaborative RPG made by a group of legendary designers.
+		<Overlay offset = "421 15" size = "550 550">icons\infantry g hoplite icon 64</Overlay>
+	</Scenario> 
+</campaign>
