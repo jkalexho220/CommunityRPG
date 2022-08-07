@@ -1,0 +1,39 @@
+<?xml version = "1.0"?>
+<trigger version="2">
+
+<Conditions>
+	<Condition name="$$22289$$Always">
+		<Expression>true</Expression>
+	</Condition>
+
+</Conditions>
+
+<Effects>
+	<Effect name="$$22355$$SetIdleProcessing">
+    	<Param name="IdleProc" dispName="$$22356$$Process Idle:" varType="bool">true</Param>
+    	<Command>trSetUnitIdleProcessing(%mod%IdleProc%mod%);</Command>
+	</Effect>
+
+	<Effect name=" C Setup Map Entrance">
+		<Param name="DstPoint" dispName="Location" varType="area">0</Param>
+		<Param name="DstIndex" dispName="Map Index" varType="int">11</Param>
+		<Param name="DstName" dispName="Map Name" varType="string"></Param>
+		<Command>xsDisableSelf();}}</Command>
+
+		<Command>rule setup_travel_to_%DstName%</Command>
+		<Command>active</Command>
+		<Command>highFrequency</Command>
+		<Command>{</Command>
+			<Command>trEventSetHandler(-%DstIndex%, "travelTo");</Command>
+			<Command>xsDisableSelf();</Command>
+		<Command>}</Command>
+
+		<Command>rule placeholder_%DstName%_trig_name</Command>
+		<Command>inactive</Command>
+		<Command>highFrequency</Command>
+		<Command>{</Command>
+		<Command>if(true) {</Command>
+		<Command>xsDisableSelf();</Command>
+	</Effect>
+
+</Effects>
