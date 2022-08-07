@@ -14,21 +14,59 @@
     	<Command>trSetUnitIdleProcessing(%mod%IdleProc%mod%);</Command>
 	</Effect>
 
-	<Effect name=" C Setup Map Entrance">
+	<Effect name=" _C Setup Map Entrance">
 		<Param name="DstPoint" dispName="Location" varType="area">0</Param>
-		<Param name="DstIndex" dispName="Map Index" varType="int">11</Param>
+		<Param name="DstIndex" dispName="Map Index" varType="long">11</Param>
 		<Param name="DstName" dispName="Map Name" varType="string"></Param>
+		<Param name="Radius" dispName="Radius" varType="float">5.0</Param>
 		<Command>xsDisableSelf();}}</Command>
 
 		<Command>rule setup_travel_to_%DstName%</Command>
 		<Command>active</Command>
 		<Command>highFrequency</Command>
 		<Command>{</Command>
-			<Command>trEventSetHandler(-%DstIndex%, "travelTo");</Command>
+			<Command>initializeMapEntrance(vector(%DstPoint%), %DstIndex%, %DstName%, %Radius%);</Command>
 			<Command>xsDisableSelf();</Command>
 		<Command>}</Command>
 
 		<Command>rule placeholder_%DstName%_trig_name</Command>
+		<Command>inactive</Command>
+		<Command>highFrequency</Command>
+		<Command>{</Command>
+		<Command>if(true) {</Command>
+		<Command>xsDisableSelf();</Command>
+	</Effect>
+
+	<Effect name=" _C Debug OFF">
+		<Command>xsDisableSelf();}}</Command>
+
+		<Command>rule debug_off</Command>
+		<Command>active</Command>
+		<Command>highFrequency</Command>
+		<Command>runImmediately</Command>
+		<Command>{debugIsOn = false;}</Command>
+
+		<Command>rule placeholder_debug_off_trig_name</Command>
+		<Command>inactive</Command>
+		<Command>highFrequency</Command>
+		<Command>{</Command>
+		<Command>if(true) {</Command>
+		<Command>xsDisableSelf();</Command>
+	</Effect>
+
+	<Effect name=" _C Load Data">
+		<Command>xsDisableSelf();}}</Command>
+
+		<Command>rule load_all_data</Command>
+		<Command>active</Command>
+		<Command>highFrequency</Command>
+		<Command>runImmediately</Command>
+		<Command>{</Command>
+			<Command>xsDisableSelf();</Command>
+			<Command>loadAllData(findMostRecentNeighbor());</Command>
+		<Command>}</Command>
+
+		<Command>rule placeholder_load_all_data_trig_name</Command>
 		<Command>inactive</Command>
 		<Command>highFrequency</Command>
 		<Command>{</Command>

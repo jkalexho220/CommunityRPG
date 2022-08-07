@@ -51,8 +51,10 @@ int MALLOC = 0;
 int ARRAYS = 0;
 int mNumArrays = 0;
 
+bool debugIsOn = true;
+
 void debugLog(string msg = "") {
-	if (trCurrentPlayer() == 1) {
+	if (debugIsOn) {
 		trChatSend(0, "<color=1,0,0>" + msg);
 	}
 }
@@ -93,6 +95,26 @@ int zNewArray(int type = 0, int size = 1, string name = "") {
 		}
 	}
 	return(index);
+}
+
+int zGetInt(int arr = 0, int index = 0) {
+	return(aiPlanGetUserVariableInt(ARRAYS, arr, index));
+}
+
+int zGetFloat(int arr = 0, int index = 0) {
+	return(aiPlanGetUserVariableFloat(ARRAYS, arr, index));
+}
+
+int zGetBool(int arr = 0, int index = 0) {
+	return(aiPlanGetUserVariableBool(ARRAYS, arr, index));
+}
+
+int zGetString(int arr = 0, int index = 0) {
+	return(aiPlanGetUserVariableString(ARRAYS, arr, index));
+}
+
+int zGetVector(int arr = 0, int index = 0) {
+	return(aiPlanGetUserVariableVector(ARRAYS, arr, index));
 }
 
 /*
@@ -137,7 +159,7 @@ int malloc(int type = -1) {
 	return(next);
 }
 
-bool zGetBool(int index = 0) {
+bool mGetBool(int index = 0) {
 	bool val = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xDirtyBit - 1, index)) {
 		val = aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xData - 1, index);
@@ -145,7 +167,7 @@ bool zGetBool(int index = 0) {
 	return(val);
 }
 
-bool zSetBool(int index = 0, bool val = false) {
+bool mSetBool(int index = 0, bool val = false) {
 	bool success = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mBool * 3 + xDirtyBit - 1, index)) {
 		success = aiPlanSetUserVariableBool(MALLOC, mBool * 3 + xData - 1, index, val);
@@ -153,18 +175,18 @@ bool zSetBool(int index = 0, bool val = false) {
 	return(success);
 }
 
-int zNewBool(bool val = false) {
+int mNewBool(bool val = false) {
 	int index = malloc(mBool);
 	zSetBool(index, val);
 	return(index);
 }
 
-bool zFreeBool(int index = 0) {
+bool mFreeBool(int index = 0) {
 	return(free(mBool, index));
 }
 
 
-string zGetString(int index = 0) {
+string mGetString(int index = 0) {
 	string val = "";
 	if (aiPlanGetUserVariableBool(MALLOC, mString * 3 + xDirtyBit - 1, index)) {
 		val = aiPlanGetUserVariableString(MALLOC, mString * 3 + xData - 1, index);
@@ -172,7 +194,7 @@ string zGetString(int index = 0) {
 	return(val);
 }
 
-bool zSetString(int index = 0, string val = "") {
+bool mSetString(int index = 0, string val = "") {
 	bool success = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mString * 3 + xDirtyBit - 1, index)) {
 		success = aiPlanSetUserVariableString(MALLOC, mString * 3 + xData - 1, index, val);
@@ -180,17 +202,17 @@ bool zSetString(int index = 0, string val = "") {
 	return(success);
 }
 
-int zNewString(string val = "") {
+int mNewString(string val = "") {
 	int index = malloc(mString);
 	zSetString(index, val);
 	return(index);
 }
 
-bool zFreeString(int index = 0) {
+bool mFreeString(int index = 0) {
 	return(free(mString, index));
 }
 
-int zGetInt(int index = 0) {
+int mGetInt(int index = 0) {
 	int val = -1;
 	if (aiPlanGetUserVariableBool(MALLOC, mInt * 3 + xDirtyBit - 1, index)) {
 		val = aiPlanGetUserVariableInt(MALLOC, mInt * 3 + xData - 1, index);
@@ -198,7 +220,7 @@ int zGetInt(int index = 0) {
 	return(val);
 }
 
-bool zSetInt(int index = 0, int val = 0) {
+bool mSetInt(int index = 0, int val = 0) {
 	bool success = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mInt * 3 + xDirtyBit - 1, index)) {
 		success = aiPlanSetUserVariableInt(MALLOC, mInt * 3 + xData - 1, index, val);
@@ -206,17 +228,17 @@ bool zSetInt(int index = 0, int val = 0) {
 	return(success);
 }
 
-int zNewInt(int val = 0) {
+int mNewInt(int val = 0) {
 	int index = malloc(mInt);
 	zSetInt(index, val);
 	return(index);
 }
 
-bool zFreeInt(int index = 0) {
+bool mFreeInt(int index = 0) {
 	return(free(mInt, index));
 }
 
-float zGetFloat(int index = 0) {
+float mGetFloat(int index = 0) {
 	float val = -1;
 	if (aiPlanGetUserVariableBool(MALLOC, mFloat * 3 + xDirtyBit - 1, index)) {
 		val = aiPlanGetUserVariableFloat(MALLOC, mFloat * 3 + xData - 1, index);
@@ -224,7 +246,7 @@ float zGetFloat(int index = 0) {
 	return(val);
 }
 
-bool zSetFloat(int index = 0, float val = 0) {
+bool mSetFloat(int index = 0, float val = 0) {
 	bool success = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mFloat * 3 + xDirtyBit - 1, index)) {
 		success = aiPlanSetUserVariableFloat(MALLOC, mFloat * 3 + xData - 1, index, val);
@@ -232,17 +254,17 @@ bool zSetFloat(int index = 0, float val = 0) {
 	return(success);
 }
 
-int zNewFloat(float val = 0) {
+int mNewFloat(float val = 0) {
 	int index = malloc(mFloat);
 	zSetFloat(index, val);
 	return(index);
 }
 
-bool zFreeFloat(int index = 0) {
+bool mFreeFloat(int index = 0) {
 	return(free(mFloat, index));
 }
 
-vector zGetVector(int index = 0) {
+vector mGetVector(int index = 0) {
 	vector val = vector(-1,-1,-1);
 	if (aiPlanGetUserVariableBool(MALLOC, mVector * 3 + xDirtyBit - 1, index)) {
 		val = aiPlanGetUserVariableVector(MALLOC, mVector * 3 + xData - 1, index);
@@ -250,7 +272,7 @@ vector zGetVector(int index = 0) {
 	return(val);
 }
 
-bool zSetVector(int index = 0, vector val = vector(0,0,0)) {
+bool mSetVector(int index = 0, vector val = vector(0,0,0)) {
 	bool success = false;
 	if (aiPlanGetUserVariableBool(MALLOC, mVector * 3 + xDirtyBit - 1, index)) {
 		success = aiPlanSetUserVariableVector(MALLOC, mVector * 3 + xData - 1, index, val);
@@ -258,13 +280,13 @@ bool zSetVector(int index = 0, vector val = vector(0,0,0)) {
 	return(success);
 }
 
-int zNewVector(vector val = vector(0,0,0)) {
+int mNewVector(vector val = vector(0,0,0)) {
 	int index = malloc(mVector);
 	zSetVector(index, val);
 	return(index);
 }
 
-bool zFreeVector(int index = 0) {
+bool mFreeVector(int index = 0) {
 	return(free(mVector, index));
 }
 

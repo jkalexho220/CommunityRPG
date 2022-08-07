@@ -12,8 +12,9 @@ import sys
 ####### CUSTOMIZE THESE #######
 ###############################
 FILENAME = '../trigger2/CRPG Loader.xml'
-NAME = ' C Trigger Loader'
-files = ['zshared.c', 'dataload.c', 'crpgHelperFunctions.c']
+NAME = ' _C Trigger Loader'
+# include a newline when setting up your personal files
+files = ['main/zshared.c', 'main/helperFunctions.c', 'main/dataload.c',  'main/travel.c']
 
 #########################################
 ####### CODE BELOW (DO NOT TOUCH) #######
