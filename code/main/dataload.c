@@ -43,6 +43,7 @@ void saveAllData() {
 	// read data from the various quest vars in backwards order
 	xSetPointer(dLocalData, 1);
 	for(i=xGetDatabaseCount(dLocalData); >0) {
+		xDatabaseNext(dLocalData, true); // database search is backwards this time
 		debugLog(xGetString(dLocalData, xLocalDataName));
 		// read the data in the quest var
 		slot = xGetInt(dLocalData, xLocalDataSlot);
@@ -54,8 +55,6 @@ void saveAllData() {
 		
 		// shift the slot data over and insert our data
 		zSetInt(localDataArray, slot, zGetInt(localDataArray, slot) * xGetInt(dLocalData, xLocalDataSize) + currentdata);
-
-		xDatabaseNext(dLocalData, true); // database search is backwards this time
 	}
 	// save all the data into the slots
 	for(i=1; < 16) {
@@ -92,7 +91,6 @@ void loadAllData(int index = 0) {
 	xSetPointer(dLocalData, 1);
 	// turn all the data into quest vars by traversing forwards
 	for(i=xGetDatabaseCount(dLocalData); >0) {
-		xDatabaseNext(dLocalData);
 		debugLog(xGetString(dLocalData, xLocalDataName));
 		// get the data from the slot
 		slot = xGetInt(dLocalData, xLocalDataSlot);
@@ -103,6 +101,7 @@ void loadAllData(int index = 0) {
 		
 		// remove the data segment and continue
 		zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));
+		xDatabaseNext(dLocalData);
 	}
 }
 
