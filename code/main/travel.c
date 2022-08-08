@@ -7,6 +7,21 @@ int xTravelEntranceRadius = 0;
 int xTravelEntranceActive = 0;
 int xTravelEntranceHeading = 0;
 
+rule ACTIVE_setup_travel_entrances
+active
+highFrequency
+{
+	dTravelEntrances = xInitDatabase("travelEntrances");
+	xTravelEntrancePos = xInitAddVector(dTravelEntrances, "pos");
+	xTravelEntranceIndex = xInitAddInt(dTravelEntrances, "dest");
+	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");
+	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");
+	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");
+	xTravelEntranceHeading = xInitAddInt(dTravelEntrances, "heading");
+
+	xsDisableSelf();
+}
+
 // sets up a map entrance and adds it to the dTravelEntrances database
 void initializeMapEntrance(vector pos = vector(0,0,0), int destIndex = 0, string destName = "", float radius = 0, int heading = 0) {
 	xAddDatabaseBlock(dTravelEntrances, true);
@@ -28,10 +43,15 @@ void travelTo(int dest = 0) {
 	trQuestVarSet("travelTime", trTimeMS() + 1000);
 	trQuestVarSet("travelDestination", dest - 100000);
 	trUIFadeToColor(0,0,0,1000,0,true);
+	// TODO: Additional things such as remembering the player's current health
 	saveAllData();
 }
 
-// Finds the neighbor that the player came from at the start of the map
+/* 
+Finds the neighbor that the player came from at the start of the map
+by searching all the neighbors and picking the one with the highest
+birthday number.
+*/
 int findMostRecentNeighbor() {
 	int index = 0;
 	int birthday = -1;
@@ -51,6 +71,10 @@ int findMostRecentNeighbor() {
 	return(index);
 }
 
+/*
+Teleports the player object to the right entrance and also damages them 
+to match the saved health
+*/
 void enterMap() {
 	if (xGetDatabaseCount(dTravelEntrances) > 0) {
 		// spawn the player at the entrance that they came from
@@ -62,6 +86,7 @@ void enterMap() {
 			}
 		}
 		// TODO: Damage the player based on their current health loaded from data save
+		selectPlayer();
 
 		// Start checking the entrances
 		trDelayedRuleActivation("check_travel_entrances");
@@ -78,26 +103,17 @@ highFrequency
 	}
 }
 
-rule ACTIVE_setup_travel_entrances
-active
-highFrequency
-{
-	dTravelEntrances = xInitDatabase("travelEntrances");
-	xTravelEntrancePos = xInitAddVector(dTravelEntrances, "pos");
-	xTravelEntranceIndex = xInitAddInt(dTravelEntrances, "dest");
-	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");
-	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");
-	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");
-	xTravelEntranceHeading = xInitAddInt(dTravelEntrances, "heading");
-
-	xsDisableSelf();
-}
-
 
 rule check_travel_entrances
 inactive
 highFrequency
 {
+	/*
+	There is a 1-second delay before this trigger starts looping to
+	give the player object time to teleport to the correct location.
+	Otherwise, the player will receive a choice dialog upon immediately
+	entering the map
+	*/
 	if (trTime() > cActivationTime) {
 		/*
 		Each trigger loop, this advances through the travel entrances database

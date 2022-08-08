@@ -46,6 +46,9 @@
 	<Effect name=" _C4 Choose Player Object">
 		<Param name="SrcObj" dispName="Player" varType="unit">0</Param>
 		<Command>trQuestVarSet("player", %SrcObj%);</Command>
+	</Effect>
+
+	<Effect name=" _C5 Enter Map">
 		<Command>enterMap();</Command>
 	</Effect>
 

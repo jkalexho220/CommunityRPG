@@ -8,6 +8,68 @@ int xLocalDataName = 0;
 
 int localDataArray = 0; // an array to temporarily store the slot data in memory
 
+void addSavedData(string varName = "", int slot = 14, int size = 1) {
+	xAddDatabaseBlock(dLocalData, true);
+	xSetString(dLocalData, xLocalDataName, varName);
+	xSetInt(dLocalData, xLocalDataSize, size);
+	xSetInt(dLocalData, xLocalDataSlot, slot);
+}
+
+rule ACTIVE_setup_local_data
+active
+highFrequency
+{
+	/*
+	The dLocalData database contains every requested piece of data. This is how
+	the data will be automatically loaded for us.
+	*/
+	dLocalData = xInitDatabase("localDataSegments");
+	xLocalDataSize = xInitAddInt(dLocalData, "size");
+	xLocalDataSlot = xInitAddInt(dLocalData, "slot");
+	xLocalDataName = xInitAddString(dLocalData, "name");
+
+	localDataArray = zNewArray(mInt, 16, "localData");
+
+	
+	/*
+	Add data to slots here
+	
+	EXAMPLE
+	name | slot | maximum value
+	addSavedData("cow", 1, 10);
+	*/
+
+	/*
+	EXAMPLE
+	Slot 3
+	Total size: 400,000
+	*/
+	addSavedData("exampleHealth", 3, 1000);
+	addSavedData("exampleAttack", 3, 100);
+	addSavedData("exampleQuest", 3, 4);
+
+	/*
+	Slot 4
+	Total size: 0
+	*/
+
+	/*
+	Slot 5
+	Total size: 0
+	*/
+
+	/*
+	Slot 6
+	Total size: 0
+	*/
+
+	/*
+	Slot 7
+	Total size: 0
+	*/
+	xsDisableSelf();
+}
+
 void updateBirthday() {
 	int birthday = 0;
 	int currentdata = 0;
@@ -103,66 +165,4 @@ void loadAllData(int index = 0) {
 		zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));
 		xDatabaseNext(dLocalData);
 	}
-}
-
-void addSavedData(string varName = "", int slot = 14, int size = 1) {
-	xAddDatabaseBlock(dLocalData, true);
-	xSetString(dLocalData, xLocalDataName, varName);
-	xSetInt(dLocalData, xLocalDataSize, size);
-	xSetInt(dLocalData, xLocalDataSlot, slot);
-}
-
-rule ACTIVE_setup_local_data
-active
-highFrequency
-{
-	/*
-	The dLocalData database contains every requested piece of data. This is how
-	the data will be automatically loaded for us.
-	*/
-	dLocalData = xInitDatabase("localDataSegments");
-	xLocalDataSize = xInitAddInt(dLocalData, "size");
-	xLocalDataSlot = xInitAddInt(dLocalData, "slot");
-	xLocalDataName = xInitAddString(dLocalData, "name");
-
-	localDataArray = zNewArray(mInt, 16, "localData");
-
-	
-	/*
-	Add data to slots here
-	
-	EXAMPLE
-	name | slot | maximum value
-	addSavedData("cow", 1, 10);
-	*/
-
-	/*
-	EXAMPLE
-	Slot 3
-	Total size: 400,000
-	*/
-	addSavedData("exampleHealth", 3, 1000);
-	addSavedData("exampleAttack", 3, 100);
-	addSavedData("exampleQuest", 3, 4);
-
-	/*
-	Slot 4
-	Total size: 0
-	*/
-
-	/*
-	Slot 5
-	Total size: 0
-	*/
-
-	/*
-	Slot 6
-	Total size: 0
-	*/
-
-	/*
-	Slot 7
-	Total size: 0
-	*/
-	xsDisableSelf();
 }

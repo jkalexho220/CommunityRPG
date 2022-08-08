@@ -6,7 +6,8 @@ void selectPlayer() {
 }
 
 /*
-Spawns the player at the vector position pos with heading "heading" by teleporting them there
+Spawns the player at the vector position pos with heading "heading" by 
+teleporting the player object to that location
 */
 void spawnPlayer(vector pos = vector(0,0,0), int heading = 0) {
 	selectPlayer();
