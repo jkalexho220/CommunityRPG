@@ -1452,6 +1452,37 @@
 
 <Command>int localDataArray = 0; // an array to temporarily store the slot data in memory</Command>
 
+<Command>void addSavedData(string varName = "", int slot = 14, int size = 1) {</Command>
+<Command>	xAddDatabaseBlock(dLocalData, true);</Command>
+<Command>	xSetString(dLocalData, xLocalDataName, varName);</Command>
+<Command>	xSetInt(dLocalData, xLocalDataSize, size);</Command>
+<Command>	xSetInt(dLocalData, xLocalDataSlot, slot);</Command>
+<Command>}</Command>
+
+<Command>rule ACTIVE_setup_local_data</Command>
+<Command>active</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	dLocalData = xInitDatabase("localDataSegments");</Command>
+<Command>	xLocalDataSize = xInitAddInt(dLocalData, "size");</Command>
+<Command>	xLocalDataSlot = xInitAddInt(dLocalData, "slot");</Command>
+<Command>	xLocalDataName = xInitAddString(dLocalData, "name");</Command>
+
+<Command>	localDataArray = zNewArray(mInt, 16, "localData");</Command>
+
+
+
+
+<Command>	addSavedData("exampleHealth", 3, 1000);</Command>
+<Command>	addSavedData("exampleAttack", 3, 100);</Command>
+<Command>	addSavedData("exampleQuest", 3, 4);</Command>
+
+
+
+
+<Command>	xsDisableSelf();</Command>
+<Command>}</Command>
+
 <Command>void updateBirthday() {</Command>
 <Command>	int birthday = 0;</Command>
 <Command>	int currentdata = 0;</Command>
@@ -1487,6 +1518,7 @@
 <Command>	// read data from the various quest vars in backwards order</Command>
 <Command>	xSetPointer(dLocalData, 1);</Command>
 <Command>	for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
+<Command>		xDatabaseNext(dLocalData, true); // database search is backwards this time</Command>
 <Command>		debugLog(xGetString(dLocalData, xLocalDataName));</Command>
 <Command>		// read the data in the quest var</Command>
 <Command>		slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
@@ -1498,8 +1530,6 @@
 
 <Command>		// shift the slot data over and insert our data</Command>
 <Command>		zSetInt(localDataArray, slot, zGetInt(localDataArray, slot) * xGetInt(dLocalData, xLocalDataSize) + currentdata);</Command>
-
-<Command>		xDatabaseNext(dLocalData, true); // database search is backwards this time</Command>
 <Command>	}</Command>
 <Command>	// save all the data into the slots</Command>
 <Command><![CDATA[	for(i=1; < 16) {]]></Command>
@@ -1536,7 +1566,6 @@
 <Command>	xSetPointer(dLocalData, 1);</Command>
 <Command>	// turn all the data into quest vars by traversing forwards</Command>
 <Command>	for(i=xGetDatabaseCount(dLocalData); >0) {</Command>
-<Command>		xDatabaseNext(dLocalData);</Command>
 <Command>		debugLog(xGetString(dLocalData, xLocalDataName));</Command>
 <Command>		// get the data from the slot</Command>
 <Command>		slot = xGetInt(dLocalData, xLocalDataSlot);</Command>
@@ -1547,38 +1576,31 @@
 
 <Command>		// remove the data segment and continue</Command>
 <Command>		zSetInt(localDataArray, slot, currentdata / xGetInt(dLocalData, xLocalDataSize));</Command>
+<Command>		xDatabaseNext(dLocalData);</Command>
 <Command>	}</Command>
 <Command>}</Command>
+<Command>int dWallTerrains = 0;</Command>
+<Command>int xWallTerrainPrimary = 0;</Command>
+<Command>int xWallTerrainSecondary = 0;</Command>
+<Command>int xWallIsChasm = 0;</Command>
 
-<Command>void addSavedData(string varName = "", int slot = 14, int size = 1) {</Command>
-<Command>	xAddDatabaseBlock(dLocalData, true);</Command>
-<Command>	xSetString(dLocalData, xLocalDataName, varName);</Command>
-<Command>	xSetInt(dLocalData, xLocalDataSize, size);</Command>
-<Command>	xSetInt(dLocalData, xLocalDataSlot, slot);</Command>
+<Command>void addWallTerrain(vector pos = vector(0,0,0), bool chasm = false) {</Command>
+<Command>	pos = vectorToGrid(pos);</Command>
+<Command>	xAddDatabaseBlock(dWallTerrains, true);</Command>
+<Command>	xSetInt(dWallTerrains, xWallTerrainPrimary, trGetTerrainType(xsVectorGetX(pos), xsVectorGetZ(pos)));</Command>
+<Command>	xSetInt(dWallTerrains, xWallTerrainSecondary, trGetTerrainSubType(xsVectorGetX(pos), xsVectorGetZ(pos)));</Command>
+<Command>	xSetBool(dWallTerrains, xWallIsChasm, chasm);</Command>
 <Command>}</Command>
 
-<Command>rule ACTIVE_setup_local_data</Command>
+<Command>rule ACTIVE_setup_terrain_database</Command>
 <Command>active</Command>
 <Command>highFrequency</Command>
 <Command>{</Command>
-<Command>	dLocalData = xInitDatabase("localDataSegments");</Command>
-<Command>	xLocalDataSize = xInitAddInt(dLocalData, "size");</Command>
-<Command>	xLocalDataSlot = xInitAddInt(dLocalData, "slot");</Command>
-<Command>	xLocalDataName = xInitAddString(dLocalData, "name");</Command>
-
-<Command>	localDataArray = zNewArray(mInt, 16, "localData");</Command>
-
-
-
-
-<Command>	addSavedData("exampleHealth", 3, 1000);</Command>
-<Command>	addSavedData("exampleAttack", 3, 100);</Command>
-<Command>	addSavedData("exampleQuest", 3, 4);</Command>
-
-
-
-
 <Command>	xsDisableSelf();</Command>
+<Command>	dWallTerrains = xInitDatabase("WallTerrains");</Command>
+<Command>	xWallTerrainPrimary = xInitAddInt(dWallTerrains, "primary");</Command>
+<Command>	xWallTerrainSecondary = xInitAddInt(dWallTerrains, "secondary");</Command>
+<Command>	xWallIsChasm = xInitAddBool(dWallTerrains, "chasm", false); // a player cannot teleport onto a chasm but projectiles can pass over it.</Command>
 <Command>}</Command>
 <Command>int dTravelEntrances = 0;</Command>
 
@@ -1588,6 +1610,31 @@
 <Command>int xTravelEntranceRadius = 0;</Command>
 <Command>int xTravelEntranceActive = 0;</Command>
 <Command>int xTravelEntranceHeading = 0;</Command>
+
+<Command>int FuelCost = 0;</Command>
+<Command>int FSOneXMin = 10;</Command>
+<Command>int FSOneXMax = 0;</Command>
+<Command>int FSOneZMin = 10;</Command>
+<Command>int FSOneZMax = 0;</Command>
+<Command>int FSTwoXMin = 10;</Command>
+<Command>int FSTwoXMax = 0;</Command>
+<Command>int FSTwoZMin = 10;</Command>
+<Command>int FSTwoZMax = 0;</Command>
+
+<Command>rule ACTIVE_setup_travel_entrances</Command>
+<Command>active</Command>
+<Command>highFrequency</Command>
+<Command>{</Command>
+<Command>	dTravelEntrances = xInitDatabase("travelEntrances");</Command>
+<Command>	xTravelEntrancePos = xInitAddVector(dTravelEntrances, "pos");</Command>
+<Command>	xTravelEntranceIndex = xInitAddInt(dTravelEntrances, "dest");</Command>
+<Command>	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");</Command>
+<Command>	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");</Command>
+<Command>	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");</Command>
+<Command>	xTravelEntranceHeading = xInitAddInt(dTravelEntrances, "heading");</Command>
+
+<Command>	xsDisableSelf();</Command>
+<Command>}</Command>
 
 <Command>// sets up a map entrance and adds it to the dTravelEntrances database</Command>
 <Command>void initializeMapEntrance(vector pos = vector(0,0,0), int destIndex = 0, string destName = "", float radius = 0, int heading = 0) {</Command>
@@ -1607,10 +1654,10 @@
 <Command>	trQuestVarSet("travelTime", trTimeMS() + 1000);</Command>
 <Command>	trQuestVarSet("travelDestination", dest - 100000);</Command>
 <Command>	trUIFadeToColor(0,0,0,1000,0,true);</Command>
+<Command>	// TODO: Additional things such as remembering the player's current health</Command>
 <Command>	saveAllData();</Command>
 <Command>}</Command>
 
-<Command>// Finds the neighbor that the player came from at the start of the map</Command>
 <Command>int findMostRecentNeighbor() {</Command>
 <Command>	int index = 0;</Command>
 <Command>	int birthday = -1;</Command>
@@ -1640,7 +1687,8 @@
 <Command>				break;</Command>
 <Command>			}</Command>
 <Command>		}</Command>
-<Command>		// TODO: Damage the player based on their current health</Command>
+<Command>		// TODO: Damage the player based on their current health loaded from data save</Command>
+<Command>		selectPlayer();</Command>
 
 <Command>		// Start checking the entrances</Command>
 <Command>		trDelayedRuleActivation("check_travel_entrances");</Command>
@@ -1655,21 +1703,6 @@
 <Command>	if (trTimeMS() > trQuestVarGet("travelTime")) {</Command>
 <Command>		trGameLoadScenario("CommunityRPG\crpg" + 1*trQuestVarGet("travelDestination") + ".scx");</Command>
 <Command>	}</Command>
-<Command>}</Command>
-
-<Command>rule ACTIVE_setup_travel_entrances</Command>
-<Command>active</Command>
-<Command>highFrequency</Command>
-<Command>{</Command>
-<Command>	dTravelEntrances = xInitDatabase("travelEntrances");</Command>
-<Command>	xTravelEntrancePos = xInitAddVector(dTravelEntrances, "pos");</Command>
-<Command>	xTravelEntranceIndex = xInitAddInt(dTravelEntrances, "dest");</Command>
-<Command>	xTravelEntranceName = xInitAddString(dTravelEntrances, "name");</Command>
-<Command>	xTravelEntranceRadius = xInitAddFloat(dTravelEntrances, "radius");</Command>
-<Command>	xTravelEntranceActive = xInitAddBool(dTravelEntrances, "active");</Command>
-<Command>	xTravelEntranceHeading = xInitAddInt(dTravelEntrances, "heading");</Command>
-
-<Command>	xsDisableSelf();</Command>
 <Command>}</Command>
 
 

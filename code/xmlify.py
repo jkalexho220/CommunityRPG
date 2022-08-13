@@ -14,7 +14,7 @@ import sys
 FILENAME = '../trigger2/CRPG Loader.xml'
 NAME = ' _C0 Trigger Loader'
 # include a newline when setting up your personal files
-files = ['main/zshared.c', 'main/helperFunctions.c', 'main/dataload.c',  'main/travel.c']
+files = ['main/zshared.c', 'main/helperFunctions.c', 'main/dataload.c', 'main/terrain.c', 'main/travel.c']
 
 #########################################
 ####### CODE BELOW (DO NOT TOUCH) #######

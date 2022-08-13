@@ -48,6 +48,12 @@
 		<Command>trQuestVarSet("player", %SrcObj%);</Command>
 	</Effect>
 
+	<Effect name=" _C4 Add Wall Terrain">
+		<Param name="Pos" dispName="Tile" varType="area">0,0,0</Param>
+		<Param name="Chasm" dispName="Chasm" varType="bool">false</Param>
+		<Command>addWallTerrain(vector(%Pos%), %Chasm%);</Command>
+	</Effect>
+
 	<Effect name=" _C5 Enter Map">
 		<Command>enterMap();</Command>
 	</Effect>
